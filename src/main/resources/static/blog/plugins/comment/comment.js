@@ -39,18 +39,23 @@ $('#commentSubmit').click(function () {
         "email": email, "websiteUrl": websiteUrl, "commentBody": commentBody
     };
     console.log(data);
+    var index = layer.load(1);
     $.ajax({
         type: 'POST',//方法类型
         url: '/blog/comment',
         data: data,
         success: function (result) {
             if (result.resultCode == 200) {
+                //关闭
+                layer.close(index);
                 swal("评论提交成功请等待博主审核", {
                     icon: "success",
                 });
                 $('#commentBody').val('');
             }
             else {
+                //关闭
+                layer.close(index);
                 swal(result.data, {
                     icon: "error",
                 });
@@ -58,6 +63,8 @@ $('#commentSubmit').click(function () {
             ;
         },
         error: function () {
+            //关闭
+            layer.close(index);
             swal("操作失败", {
                 icon: "error",
             });
