@@ -16,6 +16,7 @@ import com.site.blog.service.BlogTagRelationService;
 import com.site.blog.service.BlogTagService;
 import com.site.blog.util.DateUtils;
 import com.site.blog.util.ResultGenerator;
+import org.apache.velocity.runtime.directive.Foreach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -119,7 +120,6 @@ public class TagController {
             return ResultGenerator.getResultByHttp(HttpStatusConstants.INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * 清除标签
      * @param tagId
@@ -132,22 +132,26 @@ public class TagController {
         QueryWrapper<BlogTagRelation> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(BlogTagRelation::getTagId,tagId);
         List<BlogTagRelation> tagRelationList = blogTagRelationService.list(queryWrapper);
-        // 批量更新的BlogInfo信息
-        List<BlogInfo> infoList = tagRelationList.stream()
-                .map(tagRelation -> new BlogInfo()
-                        .setBlogId(tagRelation.getBlogId())
-                        .setBlogTags(SysConfigConstants.DEFAULT_TAG.getConfigName())).collect(Collectors.toList());
-        List<Long> blogIds = infoList.stream().map(BlogInfo::getBlogId).collect(Collectors.toList());
+        System.out.println("tagId = " + tagRelationList.size());
+        if (tagRelationList.size()>0){
+            // 批量更新的BlogInfo信息
+            List<BlogInfo> infoList = tagRelationList.stream()
+                    .map(tagRelation -> new BlogInfo()
+                            .setBlogId(tagRelation.getBlogId())
+                            .setBlogTags(SysConfigConstants.DEFAULT_TAG.getConfigName())).collect(Collectors.toList());
+            List<Long> blogIds = infoList.stream().map(BlogInfo::getBlogId).collect(Collectors.toList());
+            blogInfoService.updateBatchById(infoList);
+            blogTagRelationService.remove(new QueryWrapper<BlogTagRelation>()
+                    .lambda()
+                    .in(BlogTagRelation::getBlogId,blogIds));
+        }
+
         // 批量更新的tagRelation信息
         List<BlogTagRelation> tagRelations = tagRelationList.stream()
                 .map(tagRelation -> new BlogTagRelation()
                         .setBlogId(tagRelation.getBlogId())
                         .setTagId(Integer.valueOf(SysConfigConstants.DEFAULT_CATEGORY.getConfigField())))
                 .collect(Collectors.toList());
-            blogInfoService.updateBatchById(infoList);
-            blogTagRelationService.remove(new QueryWrapper<BlogTagRelation>()
-                    .lambda()
-                    .in(BlogTagRelation::getBlogId,blogIds));
             blogTagRelationService.saveBatch(tagRelations);
             blogTagService.removeById(tagId);
             return ResultGenerator.getResultByHttp(HttpStatusConstants.OK);

@@ -23,6 +23,7 @@ import com.site.blog.util.UploadFileUtils;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
@@ -50,7 +51,14 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/admin")
 public class BlogController {
+    @Value("${uploadFile.resourceHandler}")
+    private String resourceHandler;//请求 url 中的资源映射，不推荐写死在代码中，最好提供可配置，如 /uploadFiles/**
 
+    @Value("${uploadFile.location}")
+    private String location;//上传文件保存的本地目录，使用@Value获取全局配置文件中配置的属性值，如 E:/wmx/uploadFiles/
+
+    @Value("${uploadFile.linuxlocation}")
+    private String linuxlocation;//上传文件保存的linux目录，使用@Value获取全局配置文件中配置的属性值，如 /root/
     @Autowired
     private BlogInfoService blogInfoService;
     @Autowired
@@ -110,15 +118,27 @@ public class BlogController {
         String suffixName = UploadFileUtils.getSuffixName(file);
         //生成文件名称通用方法
         String newFileName = UploadFileUtils.getNewFileName(suffixName);
-        File fileDirectory = new File(UploadConstants.FILE_UPLOAD_DIC);
-        //创建文件
-        File destFile = new File(UploadConstants.FILE_UPLOAD_DIC + newFileName);
+        String staruri=location;
+        File locationfold=new File(location);
+        if (!locationfold.exists() && !locationfold.isDirectory()) {
+            //判断环境是windows还是linux，确认实际路径
+            locationfold=new File(linuxlocation);
+            staruri=linuxlocation;
+        }
+
         Map<String,Object> result = new HashMap<>();
+        // 构建上传文件的存放 "文件夹" 路径
+        String savePath = staruri+
+                UploadConstants.FILE_UPLOAD_DIC;
+        File fileDirectory = new File(savePath);
+        //创建文件
+        String savedestFilePath = savePath+"/" + newFileName;
+        File destFile = new File(savedestFilePath);
         try {
-            if (!fileDirectory.exists()) {
-                if (!fileDirectory.mkdirs()) {
-                    throw new IOException("文件夹创建失败,路径为：" + fileDirectory);
-                }
+            if (!fileDirectory.exists() && !fileDirectory.isDirectory()) {
+                System.out.println(fileDirectory + "目录不存在，需要创建");
+                //创建目录
+                fileDirectory.mkdir();
             }
             file.transferTo(destFile);
             String fileUrl = MyBlogUtils.getHost(new URI(request.getRequestURL() + "")) +

@@ -108,7 +108,8 @@ private static final long serialVersionUID=1L;
     /**
      * 修改时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")    //将Date转换成String,一般后台传值给前台时
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    //将Date转换成String,一般后台传值给前台时
     @TableField("update_time")
     private Date updateTime;
 
