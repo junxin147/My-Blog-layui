@@ -70,4 +70,16 @@ public class CommentController {
         }
     }
 
+    @ResponseBody
+    @PostMapping("/v1/comment/clear")
+    public Result clearLink(Integer commentId){
+        boolean flag = blogCommentService.removeById(commentId);
+        if (flag){
+            return ResultGenerator.getResultByHttp(HttpStatusConstants.OK);
+        }
+        return ResultGenerator.getResultByHttp(HttpStatusConstants.INTERNAL_SERVER_ERROR);
+    }
+
+
+
 }
