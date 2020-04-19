@@ -94,7 +94,7 @@ public class MyBlogController {
         request.setAttribute("newBlogs", blogInfoService.getNewBlog());
         request.setAttribute("hotBlogs", blogInfoService.getHotBlog());
         request.setAttribute("hotTags", blogTagService.getBlogTagCountForIndex());
-        request.setAttribute("pageName", "首页");
+        request.setAttribute("pageName", "java世界");
         request.setAttribute("configurations", blogConfigService.getAllConfigs());
         return "blog/" + theme + "/index";
     }
