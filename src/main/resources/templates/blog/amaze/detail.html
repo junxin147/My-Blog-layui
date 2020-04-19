@@ -153,7 +153,7 @@
         var count = [[${blogDetailVO.commentCount}]];
 
         initBlogList(1, 5, [[${blogDetailVO.blogId}]]);
-
+        var index = layer.load();
         testEditormdView = editormd.markdownToHTML("test-markdown-view", {
             htmlDecode      : "style,script,iframe",
             emoji           : true,
@@ -163,6 +163,7 @@
             sequenceDiagram : true,
             markdown        : [[${blogDetailVO.blogContent}]]
         });
+        layer.close(index);
 
         // 初始化评论列表
         function initBlogList(page, limit, blogId) {
