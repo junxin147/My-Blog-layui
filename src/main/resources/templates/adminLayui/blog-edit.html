@@ -21,8 +21,16 @@
     <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style>
+        <!--    以下样式解决edit.md 的无序列表和有序列表跟layui 的无序发生冲突-->
         .editormd-dialog-container select{
             display: initial;
+        }
+
+        ol>li{
+            list-style: decimal;
+        }
+        ul>li{
+            list-style: disc;
         }
     </style>
 </head>

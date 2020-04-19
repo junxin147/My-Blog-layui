@@ -126,7 +126,19 @@
 
 
 <script th:src="@{/X-admin/lib/layui/layui.js}"></script>
+<style>
+<!--    以下样式解决edit.md 的无序列表和有序列表跟layui 的无序发生冲突-->
+    .editormd-dialog-container select{
+        display: initial;
+    }
 
+    ol>li{
+        list-style: decimal;
+    }
+    ul>li{
+        list-style: disc;
+    }
+</style>
 <script th:src="@{/blog/plugins/comment/valid.js}"></script>
 <script th:src="@{/blog/plugins/comment/comment.js}"></script>
 <!-- sweetalert -->
